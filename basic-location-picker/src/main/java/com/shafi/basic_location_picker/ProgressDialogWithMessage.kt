@@ -26,7 +26,7 @@ class ProgressDialogWithMessage(activity: Activity) {
         messageTv = view.findViewById(R.id.progressbar_message_tv)
         dialog.setContentView(view)
         dialog.setCancelable(false)
-        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        //dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.window!!.setLayout(width - 150, ActionBar.LayoutParams.WRAP_CONTENT)
     }
 

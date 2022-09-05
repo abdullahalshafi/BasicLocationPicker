@@ -27,7 +27,7 @@ class LocationFinder(
     private lateinit var locationRequest: LocationRequest
     private val fusedLocationProviderClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
-    private var progressDialog: ProgressDialogWithMessage? = null
+    private var basicLocationPickerProgressDialog: BasicLocationPickerProgressDialogWithMessage? = null
     private var currentLocation: Location? = null
 
     companion object {
@@ -42,16 +42,16 @@ class LocationFinder(
     }
 
     init {
-        progressDialog = ProgressDialogWithMessage(activity)
-        progressDialog?.setMessage(activity.getString(R.string.getting_location))
+        basicLocationPickerProgressDialog = BasicLocationPickerProgressDialogWithMessage(activity)
+        basicLocationPickerProgressDialog?.setMessage(activity.getString(R.string.getting_location))
     }
 
     public fun showProgressDialog() {
-        progressDialog?.show()
+        basicLocationPickerProgressDialog?.show()
     }
 
     public fun dismissProgressDialog() {
-        progressDialog?.dismiss()
+        basicLocationPickerProgressDialog?.dismiss()
     }
 
     public fun getCurrentLocation(): Location? {

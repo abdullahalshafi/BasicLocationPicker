@@ -3,14 +3,12 @@ package com.shafi.basic_location_picker
 import android.app.ActionBar
 import android.app.Activity
 import android.app.Dialog
-import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.widget.TextView
 
 
-class ProgressDialogWithMessage(activity: Activity) {
+class BasicLocationPickerProgressDialogWithMessage(activity: Activity) {
 
     private var dialog: Dialog
     private var messageTv: TextView? = null
@@ -22,7 +20,7 @@ class ProgressDialogWithMessage(activity: Activity) {
         display.getSize(size)
         val width = size.x
         dialog = Dialog(activity)
-        val view = LayoutInflater.from(activity).inflate(R.layout.progress_dialog_with_message, null)
+        val view = LayoutInflater.from(activity).inflate(R.layout.basic_location_picker_progress_dialog_with_message, null)
         messageTv = view.findViewById(R.id.progressbar_message_tv)
         dialog.setContentView(view)
         dialog.setCancelable(false)

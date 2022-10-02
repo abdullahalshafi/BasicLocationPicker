@@ -45,9 +45,9 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = 'com.github.JoelKanyi'
-                artifactId = 'kenyan-counties'
-                version = '1.0.0'
+                groupId = 'abdullahalshafi'
+                artifactId = 'basic-location-picker'
+                version = '1.0.1'
             }
         }
     }

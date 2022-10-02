@@ -1,7 +1,6 @@
 package com.shafi.basic_location_picker
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,10 +21,10 @@ object LocationHelper {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-    fun start(activity: Activity, intentLauncher: ActivityResultLauncher<Intent>) {
+    fun start(context: Context, intentLauncher: ActivityResultLauncher<Intent>) {
 
-        val intent = Intent(activity, LocationHelperActivity::class.java)
-        intent.putExtra(PACKAGE_NAME, activity.packageName)
+        val intent = Intent(context, LocationHelperActivity::class.java)
+        intent.putExtra(PACKAGE_NAME, context.packageName)
         intentLauncher.launch(intent)
     }
 

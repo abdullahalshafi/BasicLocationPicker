@@ -15,7 +15,7 @@ allprojects {
 ### Step 2. Add the dependency
 ```Kotlin
 dependencies {
-    implementation 'com.github.abdullahalshafi:BasicLocationPicker:1.0.1'
+    implementation 'com.github.abdullahalshafi:BasicLocationPicker:1.0.2'
 }
 ```
 
@@ -40,7 +40,7 @@ private val launcher =
 
 #### Get address from location using default Geocoder
 ```kotlin
-val address = LocationHelper.getAddressFromLocation(this, location)
+val address = LocationHelper.getAddressFromLocation(context, location)
 ```
 
 

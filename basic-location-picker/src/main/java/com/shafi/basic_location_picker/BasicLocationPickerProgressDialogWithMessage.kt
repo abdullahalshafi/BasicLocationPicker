@@ -20,7 +20,8 @@ class BasicLocationPickerProgressDialogWithMessage(activity: Activity) {
         display.getSize(size)
         val width = size.x
         dialog = Dialog(activity)
-        val view = LayoutInflater.from(activity).inflate(R.layout.basic_location_picker_progress_dialog_with_message, null)
+        val view = LayoutInflater.from(activity)
+            .inflate(R.layout.basic_location_picker_progress_dialog_with_message, null)
         messageTv = view.findViewById(R.id.progressbar_message_tv)
         dialog.setContentView(view)
         dialog.setCancelable(false)
@@ -32,19 +33,19 @@ class BasicLocationPickerProgressDialogWithMessage(activity: Activity) {
         messageTv?.text = message
     }
 
-    public fun show(){
-        if(!dialog.isShowing && activity != null && !activity!!.isFinishing){
+    public fun show() {
+        if ((activity != null && !activity!!.isFinishing) && !dialog.isShowing) {
             dialog.show()
         }
     }
 
     public fun dismiss() {
-        if (dialog.isShowing) {
+        if ((activity != null && !activity!!.isFinishing) && dialog.isShowing) {
             dialog.dismiss()
         }
     }
 
-    public fun isShowing(): Boolean{
+    public fun isShowing(): Boolean {
         return dialog.isShowing
     }
 }

@@ -64,6 +64,7 @@ class LocationFinder(
             showProgressDialog()
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
                 if (location != null) {
+
                     Handler(Looper.getMainLooper()).postDelayed({
                         currentLocation = location
                         dismissProgressDialog()

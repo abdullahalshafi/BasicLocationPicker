@@ -15,16 +15,22 @@ object LocationHelper {
 
     const val PACKAGE_NAME = "package_name"
     const val LOCATION_RESULT = "location_result"
+    const val IS_HIGH_ACCURACY = "is_high_accuracy"
 
     val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-    fun start(context: Context, intentLauncher: ActivityResultLauncher<Intent>) {
+    fun start(
+        context: Context,
+        intentLauncher: ActivityResultLauncher<Intent>,
+        isHighAccuracy: Boolean = false
+    ) {
 
         val intent = Intent(context, LocationHelperActivity::class.java)
         intent.putExtra(PACKAGE_NAME, context.packageName)
+        intent.putExtra(IS_HIGH_ACCURACY, isHighAccuracy)
         intentLauncher.launch(intent)
     }
 

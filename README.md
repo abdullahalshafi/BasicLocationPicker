@@ -15,14 +15,14 @@ allprojects {
 ### Step 2. Add the dependency
 ```Kotlin
 dependencies {
-    implementation 'com.github.abdullahalshafi:BasicLocationPicker:1.0.3'
+    implementation 'com.github.abdullahalshafi:BasicLocationPicker:1.0.4'
 }
 ```
 
 ### Usage
 
 ```kotlin
-LocationHelper.start(this, launcher)
+LocationHelper.start(this, launcher, true) //send true if you want high accuracy
 ```
 
 #### Location Result

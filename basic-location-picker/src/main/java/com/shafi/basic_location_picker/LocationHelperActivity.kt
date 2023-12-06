@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import com.shafi.basic_location_picker.LocationHelper.IS_HIGH_ACCURACY
 import com.shafi.basic_location_picker.LocationHelper.isLocationPermissionGranted
 import com.shafi.basic_location_picker.LocationHelper.permissions
 
@@ -30,12 +31,12 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
     }
 
     private fun handleLocationAfterPermissionGranter() {
-        locationFinder = LocationFinder.getInstance(this, locationPermissionLauncher, this)
-        if (locationFinder?.getCurrentLocation() == null) {
-            locationFinder?.getLocation()
-        } else {
-            onLocationFound(locationFinder?.getCurrentLocation()!!)
-        }
+        locationFinder = LocationFinder.getInstance(
+            this, locationPermissionLauncher, this, intent.getBooleanExtra(
+                IS_HIGH_ACCURACY, false
+            )
+        )
+        locationFinder?.getLocation()
     }
 
     private fun requestLocationPermission() {
@@ -43,6 +44,7 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
             isLocationPermissionGranted(this) -> {
                 handleLocationAfterPermissionGranter()
             }
+
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -53,6 +55,7 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
                     getString(R.string.please_give_location_permission)
                 ) { locationPermissionLauncher.launch(permissions) }
             }
+
             else -> {
 
                 showPermissionAlert(

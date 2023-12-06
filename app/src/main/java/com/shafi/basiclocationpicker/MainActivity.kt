@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<Button>(R.id.location_btn).setOnClickListener {
-            LocationHelper.start(this, launcher)
+            LocationHelper.start(this, launcher, true)
         }
     }
 

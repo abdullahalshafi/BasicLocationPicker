@@ -9,6 +9,7 @@ import android.os.Looper
 import androidx.activity.result.ActivityResultLauncher
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.Task
 import com.shafi.basic_location_picker.LocationHelper.isLocationPermissionGranted
 import com.shafi.basic_location_picker.LocationHelper.permissions
@@ -20,24 +21,26 @@ import com.shafi.basic_location_picker.LocationHelper.permissions
 class LocationFinder(
     private var activity: Activity,
     private var permissionContracts: ActivityResultLauncher<Array<String>>,
-    private var locationListener: LocationListener
+    private var locationListener: LocationListener,
+    private var isHighAccuracy: Boolean
 ) {
     private val TAG = LocationFinder::class.java.simpleName
 
     private lateinit var locationRequest: LocationRequest
     private val fusedLocationProviderClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
-    private var basicLocationPickerProgressDialog: BasicLocationPickerProgressDialogWithMessage? = null
-    private var currentLocation: Location? = null
+    private var basicLocationPickerProgressDialog: BasicLocationPickerProgressDialogWithMessage? =
+        null
 
     companion object {
 
         public fun getInstance(
             activity: Activity,
             permissionContracts: ActivityResultLauncher<Array<String>>,
-            locationListener: LocationListener
+            locationListener: LocationListener,
+            isHighAccuracy: Boolean
         ): LocationFinder {
-            return LocationFinder(activity, permissionContracts, locationListener)
+            return LocationFinder(activity, permissionContracts, locationListener, isHighAccuracy)
         }
     }
 
@@ -54,26 +57,28 @@ class LocationFinder(
         basicLocationPickerProgressDialog?.dismiss()
     }
 
-    public fun getCurrentLocation(): Location? {
-        return currentLocation
-    }
-
     @SuppressLint("MissingPermission")
     public fun getLocation() {
+
         if (isLocationPermissionGranted(activity)) {
+
             showProgressDialog()
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location != null) {
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        currentLocation = location
-                        dismissProgressDialog()
-                        stopLocationUpdates()
-                        locationListener.onLocationFound(location)
-                    }, 1000)
-
-                } else {
-                    initLocationRequest()
+            if (isHighAccuracy) {
+                initLocationRequest()
+            } else {
+                fusedLocationProviderClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    CancellationTokenSource().token
+                ).addOnSuccessListener { location ->
+                    if (location != null) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            dismissProgressDialog()
+                            stopLocationUpdates()
+                            locationListener.onLocationFound(location)
+                        }, 1000)
+                    } else {
+                        initLocationRequest()
+                    }
                 }
             }
         } else {
@@ -83,10 +88,11 @@ class LocationFinder(
 
     private fun initLocationRequest() {
         try {
-            locationRequest = LocationRequest.create()
-            locationRequest.priority = Priority.PRIORITY_HIGH_ACCURACY
-            locationRequest.interval = 45000
-            locationRequest.fastestInterval = 30000
+
+            locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 9000)
+                .setWaitForAccurateLocation(true)
+                .setMinUpdateIntervalMillis(5000)
+                .build()
 
             val builder: LocationSettingsRequest.Builder =
                 LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
@@ -119,7 +125,6 @@ class LocationFinder(
 
     private fun startLocationUpdates() {
         try {
-//            getLocation("startLocationUpdates")
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -135,7 +140,9 @@ class LocationFinder(
             super.onLocationResult(locationResult)
             for (location in locationResult.locations) {
                 if (location != null) {
-                    getLocation()
+                    dismissProgressDialog()
+                    stopLocationUpdates()
+                    locationListener.onLocationFound(location)
                     break
                 }
             }

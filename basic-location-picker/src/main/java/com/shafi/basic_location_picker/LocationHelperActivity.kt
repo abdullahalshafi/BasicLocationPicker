@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
@@ -108,8 +109,16 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
     }
 
     override fun onLocationFound(location: Location) {
+
+        //check if provided from mock location
+        val isFromMock: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            location.isMock
+
+        } else location.isFromMockProvider
+
         val intent = Intent()
         intent.putExtra(LocationHelper.LOCATION_RESULT, location)
+        intent.putExtra(LocationHelper.IS_MOCK_LOCATION, isFromMock)
         setResult(RESULT_OK, intent)
         finish()
     }

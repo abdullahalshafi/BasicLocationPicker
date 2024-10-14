@@ -25,10 +25,11 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val location = result.data?.getParcelableExtra<Location>(LocationHelper.LOCATION_RESULT) as Location
+                val isFromMock = result.data?.getBooleanExtra(LocationHelper.IS_MOCK_LOCATION, false)
                 Toast.makeText(this, "location: ${location.latitude} ${location.longitude}", Toast.LENGTH_LONG).show()
                 Toast.makeText(this, "address: ${LocationHelper.getAddressFromLocation(this, location)}", Toast.LENGTH_LONG).show()
-                Log.d("LOCATION", "result: ${location.latitude} ${location.longitude}")
-                Log.d("LOCATION", "address: ${LocationHelper.getAddressFromLocation(this, location)}")
+                Log.d("BASIC_LOCATION_RESULT", "result: ${location.latitude} ${location.longitude}, mock: $isFromMock")
+                Log.d("BASIC_LOCATION_RESULT", "address: ${LocationHelper.getAddressFromLocation(this, location)}")
             }
         }
 }

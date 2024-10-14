@@ -16,6 +16,7 @@ object LocationHelper {
     const val PACKAGE_NAME = "package_name"
     const val LOCATION_RESULT = "location_result"
     const val IS_HIGH_ACCURACY = "is_high_accuracy"
+    const val IS_MOCK_LOCATION = "is_mock_location"
 
     val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,

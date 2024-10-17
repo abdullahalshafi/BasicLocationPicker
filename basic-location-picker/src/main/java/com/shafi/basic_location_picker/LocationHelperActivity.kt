@@ -46,17 +46,6 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
                 handleLocationAfterPermissionGranter()
             }
 
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) -> {
-                showPermissionAlert(
-                    getString(R.string.location_permission),
-                    getString(R.string.give_location_permission),
-                    getString(R.string.please_give_location_permission)
-                ) { locationPermissionLauncher.launch(permissions) }
-            }
-
             else -> {
 
                 showPermissionAlert(

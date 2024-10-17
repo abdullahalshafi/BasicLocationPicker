@@ -138,12 +138,12 @@ class LocationFinder(
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            for (location in locationResult.locations) {
-                if (location != null) {
+            if(locationResult.locations.isNullOrEmpty().not()) {
+                val location = locationResult.locations.last()
+                if(location != null) {
                     dismissProgressDialog()
                     stopLocationUpdates()
                     locationListener.onLocationFound(location)
-                    break
                 }
             }
         }

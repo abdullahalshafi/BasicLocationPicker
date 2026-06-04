@@ -44,6 +44,7 @@ class LocationFinder(
 
     private var bestLocation: Location? = null
     private var sampleCount: Int = 0
+    private var sawRejectedMock: Boolean = false
     private var startedAtElapsedMs: Long = 0L
     private var dialogShownAtElapsedMs: Long = 0L
     private var delivered: Boolean = false
@@ -70,6 +71,7 @@ class LocationFinder(
     private fun resetState() {
         bestLocation = null
         sampleCount = 0
+        sawRejectedMock = false
         delivered = false
         startedAtElapsedMs = SystemClock.elapsedRealtime()
     }
@@ -140,7 +142,10 @@ class LocationFinder(
     private fun considerSample(candidate: Location) {
         if (!candidate.hasAccuracy()) return
         if (isStale(candidate)) return
-        if (config.rejectMockLocations && candidate.isMockSafe()) return
+        if (config.rejectMockLocations && candidate.isMockSafe()) {
+            sawRejectedMock = true
+            return
+        }
 
         sampleCount++
         val current = bestLocation
@@ -160,6 +165,8 @@ class LocationFinder(
         val best = bestLocation
         if (best != null) {
             deliverSuccess(best, thresholdMet = false)
+        } else if (sawRejectedMock) {
+            deliverFailure(LocationFailReason.MOCK_REJECTED)
         } else {
             deliverFailure(LocationFailReason.TIMEOUT_NO_SAMPLES)
         }
@@ -168,11 +175,9 @@ class LocationFinder(
     private fun deliverSuccess(location: Location, thresholdMet: Boolean) {
         if (delivered || pendingDelivery != null) return
 
+        // bestLocation is never a mock when rejectMockLocations is true (mocks are
+        // filtered in considerSample), so this flag is only informational here.
         val isMock = location.isMockSafe()
-        if (config.rejectMockLocations && isMock) {
-            scheduleDelivery { finishWithFailure(LocationFailReason.MOCK_REJECTED) }
-            return
-        }
 
         val result = BasicLocationResult(
             location = location,

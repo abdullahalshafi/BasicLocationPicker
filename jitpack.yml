@@ -1,4 +1,4 @@
 jdk:
-  - openjdk11
-before_install:
-  - ./scripts/prepareJitpackEnvironment.sh
+  - openjdk17
+install:
+  - ./gradlew :basic-location-picker:assembleRelease publishToMavenLocal

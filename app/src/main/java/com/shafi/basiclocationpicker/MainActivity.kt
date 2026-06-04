@@ -1,14 +1,16 @@
 package com.shafi.basiclocationpicker
 
 import android.app.Activity
-import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.shafi.basic_location_picker.BasicLocationResult
 import com.shafi.basic_location_picker.LocationHelper
+import com.shafi.basic_location_picker.LocationRequestConfig
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,19 +19,54 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<Button>(R.id.location_btn).setOnClickListener {
-            LocationHelper.start(this, launcher, true)
+            val config = LocationRequestConfig(
+                targetAccuracyMeters = 20f,
+                timeoutMs = 30_000L,
+                rejectMockLocations = true,
+            )
+            LocationHelper.start(this, launcher, config)
         }
     }
 
     private val launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val location = result.data?.getParcelableExtra<Location>(LocationHelper.LOCATION_RESULT) as Location
-                val isFromMock = result.data?.getBooleanExtra(LocationHelper.IS_MOCK_LOCATION, false)
-                Toast.makeText(this, "location: ${location.latitude} ${location.longitude}", Toast.LENGTH_LONG).show()
-                Toast.makeText(this, "address: ${LocationHelper.getAddressFromLocation(this, location)}", Toast.LENGTH_LONG).show()
-                Log.d("BASIC_LOCATION_RESULT", "result: ${location.latitude} ${location.longitude}, mock: $isFromMock")
-                Log.d("BASIC_LOCATION_RESULT", "address: ${LocationHelper.getAddressFromLocation(this, location)}")
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+            if (activityResult.resultCode != Activity.RESULT_OK) {
+                val reason = activityResult.data?.getStringExtra(LocationHelper.LOCATION_FAIL_REASON)
+                Log.d(TAG, "location failed: $reason")
+                Toast.makeText(this, "Location failed: $reason", Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+
+            val data = activityResult.data ?: return@registerForActivityResult
+            val result: BasicLocationResult? =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    data.getParcelableExtra(LocationHelper.LOCATION_RESULT, BasicLocationResult::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    data.getParcelableExtra(LocationHelper.LOCATION_RESULT)
+                }
+            if (result == null) return@registerForActivityResult
+
+            val loc = result.location
+            Toast.makeText(
+                this,
+                "lat=${loc.latitude}, lng=${loc.longitude}, acc=${result.accuracyMeters}m",
+                Toast.LENGTH_LONG,
+            ).show()
+            Log.d(
+                TAG,
+                "fix: lat=${loc.latitude}, lng=${loc.longitude}, acc=${result.accuracyMeters}m, " +
+                    "samples=${result.sampleCount}, ttf=${result.timeToFixMs}ms, " +
+                    "thresholdMet=${result.thresholdMet}, mock=${result.isMock}",
+            )
+
+            LocationHelper.getAddressFromLocation(this, loc) { address ->
+                Toast.makeText(this, "address: $address", Toast.LENGTH_LONG).show()
+                Log.d(TAG, "address: $address")
             }
         }
+
+    companion object {
+        private const val TAG = "BASIC_LOCATION_RESULT"
+    }
 }

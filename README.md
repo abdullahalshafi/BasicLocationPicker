@@ -25,7 +25,7 @@ dependencyResolutionManagement {
 
 ```groovy
 dependencies {
-    implementation 'com.github.abdullahalshafi:BasicLocationPicker:2.0.1'
+    implementation 'com.github.abdullahalshafi:BasicLocationPicker:2.0.2'
 }
 ```
 
@@ -197,6 +197,20 @@ The `isHighAccuracy: Boolean` flag is gone — v2 is always high-accuracy and le
 - **Hard timeout** with best-effort fallback — never spins forever on indoor cold-starts.
 - **Validates `hasAccuracy()`** so a provider returning `0.0f` accuracy doesn't slip through as "perfect."
 - **Leak-safe** — the internal `Handler` is cancelled on activity destroy.
+
+---
+
+## Changelog
+
+### 2.0.2
+- Add consumer ProGuard/R8 rules so minified consumer apps don't crash — keeps public types, `Parcelable` `CREATOR` fields, and `LocationFailReason` enum members.
+- Harden config parsing: a malformed `LocationRequestConfig` extra now falls back to defaults instead of throwing.
+
+### 2.0.1
+- Fix mock-location rejection bug.
+
+### 2.0.0
+- Accuracy-aware rewrite: best-sample selection, accuracy threshold, hard timeout, staleness rejection, optional mock filtering. Breaking — see [Migration from 1.x](#migration-from-1x).
 
 ---
 

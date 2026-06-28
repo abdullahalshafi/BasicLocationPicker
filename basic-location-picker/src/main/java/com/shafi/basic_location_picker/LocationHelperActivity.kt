@@ -32,13 +32,16 @@ class LocationHelperActivity : AppCompatActivity(), LocationFinder.LocationListe
     }
 
     private fun readConfig(): LocationRequestConfig {
-        val fromIntent: LocationRequestConfig? =
+        val fromIntent: LocationRequestConfig? = try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(LOCATION_CONFIG, LocationRequestConfig::class.java)
             } else {
                 @Suppress("DEPRECATION")
                 intent.getParcelableExtra(LOCATION_CONFIG)
             }
+        } catch (e: Exception) {
+            null
+        }
         return fromIntent ?: LocationRequestConfig.DEFAULT
     }
 
